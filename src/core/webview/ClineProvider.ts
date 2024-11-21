@@ -46,6 +46,9 @@ type GlobalStateKey =
 	| "lastShownAnnouncementId"
 	| "customInstructions"
 	| "alwaysAllowReadOnly"
+	| "alwaysAutoSave"
+	| "alwaysAutoApprove" 
+	| "alwaysAutoRunCommands"
 	| "taskHistory"
 	| "openAiBaseUrl"
 	| "openAiModelId"
@@ -188,18 +191,21 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 
 	async initClineWithTask(task?: string, images?: string[]) {
 		await this.clearTask() // ensures that an exising task doesn't exist before starting a new one, although this shouldn't be possible since user must clear task before starting a new one
-		const { apiConfiguration, customInstructions, alwaysAllowReadOnly } = await this.getState()
-		this.cline = new Cline(this, apiConfiguration, customInstructions, alwaysAllowReadOnly, task, images)
+		const { apiConfiguration, customInstructions, alwaysAllowReadOnly, alwaysAutoSave, alwaysAutoApprove, alwaysAutoRunCommands  } = await this.getState()
+		this.cline = new Cline(this, apiConfiguration, customInstructions, alwaysAllowReadOnly, alwaysAutoSave, alwaysAutoApprove, alwaysAutoRunCommands, task, images)
 	}
 
 	async initClineWithHistoryItem(historyItem: HistoryItem) {
 		await this.clearTask()
-		const { apiConfiguration, customInstructions, alwaysAllowReadOnly } = await this.getState()
+		const { apiConfiguration, customInstructions, alwaysAllowReadOnly, alwaysAutoSave, alwaysAutoApprove, alwaysAutoRunCommands  } = await this.getState()
 		this.cline = new Cline(
 			this,
 			apiConfiguration,
 			customInstructions,
 			alwaysAllowReadOnly,
+			alwaysAutoSave,
+			alwaysAutoApprove,
+			alwaysAutoRunCommands,
 			undefined,
 			undefined,
 			historyItem
@@ -480,7 +486,27 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 							await this.initClineWithHistoryItem(historyItem) // clears task again, so we need to abortTask manually above
 							// await this.postStateToWebview() // new Cline instance will post state when it's ready. having this here sent an empty messages array to webview leading to virtuoso having to reload the entire list
 						}
-
+						break
+					case "alwaysAutoSave":
+						await this.updateGlobalState("alwaysAutoSave", message.bool ?? undefined)
+						if (this.cline) {
+							this.cline.alwaysAutoSave = message.bool ?? false
+						}
+						await this.postStateToWebview()
+						break
+					case "alwaysAutoApprove":
+						await this.updateGlobalState("alwaysAutoApprove", message.bool ?? undefined)
+						if (this.cline) {
+							this.cline.alwaysAutoApprove = message.bool ?? false
+						}
+						await this.postStateToWebview()
+						break
+					case "alwaysAutoRunCommands":
+						await this.updateGlobalState("alwaysAutoRunCommands", message.bool ?? undefined)
+						if (this.cline) {
+							this.cline.alwaysAutoRunCommands = message.bool ?? false
+						}
+						await this.postStateToWebview()
 						break
 					// Add more switch case statements here as more webview message commands
 					// are created within the webview context (i.e. inside media/main.js)
@@ -781,13 +807,24 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 	}
 
 	async getStateToPostToWebview() {
-		const { apiConfiguration, lastShownAnnouncementId, customInstructions, alwaysAllowReadOnly, taskHistory } =
-			await this.getState()
+		const { 
+			apiConfiguration, 
+			lastShownAnnouncementId, 
+			customInstructions, 
+			alwaysAllowReadOnly,
+			alwaysAutoSave,
+			alwaysAutoApprove,
+			alwaysAutoRunCommands,
+			taskHistory 
+		} = await this.getState()
 		return {
 			version: this.context.extension?.packageJSON?.version ?? "",
 			apiConfiguration,
 			customInstructions,
 			alwaysAllowReadOnly,
+			alwaysAutoSave,
+			alwaysAutoApprove,
+			alwaysAutoRunCommands,
 			uriScheme: vscode.env.uriScheme,
 			clineMessages: this.cline?.clineMessages || [],
 			taskHistory: (taskHistory || []).filter((item) => item.ts && item.task).sort((a, b) => b.ts - a.ts),
@@ -846,9 +883,87 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 	https://www.eliostruyf.com/devhack-code-extension-storage-options/
 	*/
 
-	async getState() {
-		const [
-			storedApiProvider,
+async getState() {
+	const [
+		storedApiProvider,
+		apiModelId,
+		apiKey,
+		openRouterApiKey,
+		awsAccessKey,
+		awsSecretKey,
+		awsSessionToken,
+		awsRegion,
+		awsUseCrossRegionInference,
+		vertexProjectId,
+		vertexRegion,
+		openAiBaseUrl,
+		openAiApiKey,
+		openAiModelId,
+		ollamaModelId,
+		ollamaBaseUrl,
+		lmStudioModelId,
+		lmStudioBaseUrl,
+		anthropicBaseUrl,
+		geminiApiKey,
+		openAiNativeApiKey,
+		azureApiVersion,
+		openRouterModelId,
+		openRouterModelInfo,
+		lastShownAnnouncementId,
+		customInstructions,
+		alwaysAllowReadOnly,
+		alwaysAutoSave,
+		alwaysAutoApprove,
+		alwaysAutoRunCommands,
+		taskHistory,
+	] = await Promise.all([
+		this.getGlobalState("apiProvider") as Promise<ApiProvider | undefined>,
+		this.getGlobalState("apiModelId") as Promise<string | undefined>,
+		this.getSecret("apiKey") as Promise<string | undefined>,
+		this.getSecret("openRouterApiKey") as Promise<string | undefined>,
+		this.getSecret("awsAccessKey") as Promise<string | undefined>,
+		this.getSecret("awsSecretKey") as Promise<string | undefined>,
+		this.getSecret("awsSessionToken") as Promise<string | undefined>,
+		this.getGlobalState("awsRegion") as Promise<string | undefined>,
+		this.getGlobalState("awsUseCrossRegionInference") as Promise<boolean | undefined>,
+		this.getGlobalState("vertexProjectId") as Promise<string | undefined>,
+		this.getGlobalState("vertexRegion") as Promise<string | undefined>,
+		this.getGlobalState("openAiBaseUrl") as Promise<string | undefined>,
+		this.getSecret("openAiApiKey") as Promise<string | undefined>,
+		this.getGlobalState("openAiModelId") as Promise<string | undefined>,
+		this.getGlobalState("ollamaModelId") as Promise<string | undefined>,
+		this.getGlobalState("ollamaBaseUrl") as Promise<string | undefined>,
+		this.getGlobalState("lmStudioModelId") as Promise<string | undefined>,
+		this.getGlobalState("lmStudioBaseUrl") as Promise<string | undefined>,
+		this.getGlobalState("anthropicBaseUrl") as Promise<string | undefined>,
+		this.getSecret("geminiApiKey") as Promise<string | undefined>,
+		this.getSecret("openAiNativeApiKey") as Promise<string | undefined>,
+		this.getGlobalState("azureApiVersion") as Promise<string | undefined>,
+		this.getGlobalState("openRouterModelId") as Promise<string | undefined>,
+		this.getGlobalState("openRouterModelInfo") as Promise<ModelInfo | undefined>,
+		this.getGlobalState("lastShownAnnouncementId") as Promise<string | undefined>,
+		this.getGlobalState("customInstructions") as Promise<string | undefined>,
+		this.getGlobalState("alwaysAllowReadOnly") as Promise<boolean | undefined>,
+		this.getGlobalState("alwaysAutoSave") as Promise<boolean | undefined>,
+		this.getGlobalState("alwaysAutoApprove") as Promise<boolean | undefined>,
+		this.getGlobalState("alwaysAutoRunCommands") as Promise<boolean | undefined>,
+		this.getGlobalState("taskHistory") as Promise<HistoryItem[] | undefined>,
+	])
+
+	let apiProvider: ApiProvider
+	if (storedApiProvider) {
+		apiProvider = storedApiProvider
+	} else {
+		if (apiKey) {
+			apiProvider = "anthropic"
+		} else {
+			apiProvider = "openrouter"
+		}
+	}
+
+	return {
+		apiConfiguration: {
+			apiProvider,
 			apiModelId,
 			apiKey,
 			openRouterApiKey,
@@ -872,88 +987,16 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 			azureApiVersion,
 			openRouterModelId,
 			openRouterModelInfo,
-			lastShownAnnouncementId,
-			customInstructions,
-			alwaysAllowReadOnly,
-			taskHistory,
-		] = await Promise.all([
-			this.getGlobalState("apiProvider") as Promise<ApiProvider | undefined>,
-			this.getGlobalState("apiModelId") as Promise<string | undefined>,
-			this.getSecret("apiKey") as Promise<string | undefined>,
-			this.getSecret("openRouterApiKey") as Promise<string | undefined>,
-			this.getSecret("awsAccessKey") as Promise<string | undefined>,
-			this.getSecret("awsSecretKey") as Promise<string | undefined>,
-			this.getSecret("awsSessionToken") as Promise<string | undefined>,
-			this.getGlobalState("awsRegion") as Promise<string | undefined>,
-			this.getGlobalState("awsUseCrossRegionInference") as Promise<boolean | undefined>,
-			this.getGlobalState("vertexProjectId") as Promise<string | undefined>,
-			this.getGlobalState("vertexRegion") as Promise<string | undefined>,
-			this.getGlobalState("openAiBaseUrl") as Promise<string | undefined>,
-			this.getSecret("openAiApiKey") as Promise<string | undefined>,
-			this.getGlobalState("openAiModelId") as Promise<string | undefined>,
-			this.getGlobalState("ollamaModelId") as Promise<string | undefined>,
-			this.getGlobalState("ollamaBaseUrl") as Promise<string | undefined>,
-			this.getGlobalState("lmStudioModelId") as Promise<string | undefined>,
-			this.getGlobalState("lmStudioBaseUrl") as Promise<string | undefined>,
-			this.getGlobalState("anthropicBaseUrl") as Promise<string | undefined>,
-			this.getSecret("geminiApiKey") as Promise<string | undefined>,
-			this.getSecret("openAiNativeApiKey") as Promise<string | undefined>,
-			this.getGlobalState("azureApiVersion") as Promise<string | undefined>,
-			this.getGlobalState("openRouterModelId") as Promise<string | undefined>,
-			this.getGlobalState("openRouterModelInfo") as Promise<ModelInfo | undefined>,
-			this.getGlobalState("lastShownAnnouncementId") as Promise<string | undefined>,
-			this.getGlobalState("customInstructions") as Promise<string | undefined>,
-			this.getGlobalState("alwaysAllowReadOnly") as Promise<boolean | undefined>,
-			this.getGlobalState("taskHistory") as Promise<HistoryItem[] | undefined>,
-		])
-
-		let apiProvider: ApiProvider
-		if (storedApiProvider) {
-			apiProvider = storedApiProvider
-		} else {
-			// Either new user or legacy user that doesn't have the apiProvider stored in state
-			// (If they're using OpenRouter or Bedrock, then apiProvider state will exist)
-			if (apiKey) {
-				apiProvider = "anthropic"
-			} else {
-				// New users should default to openrouter
-				apiProvider = "openrouter"
-			}
-		}
-
-		return {
-			apiConfiguration: {
-				apiProvider,
-				apiModelId,
-				apiKey,
-				openRouterApiKey,
-				awsAccessKey,
-				awsSecretKey,
-				awsSessionToken,
-				awsRegion,
-				awsUseCrossRegionInference,
-				vertexProjectId,
-				vertexRegion,
-				openAiBaseUrl,
-				openAiApiKey,
-				openAiModelId,
-				ollamaModelId,
-				ollamaBaseUrl,
-				lmStudioModelId,
-				lmStudioBaseUrl,
-				anthropicBaseUrl,
-				geminiApiKey,
-				openAiNativeApiKey,
-				azureApiVersion,
-				openRouterModelId,
-				openRouterModelInfo,
-			},
-			lastShownAnnouncementId,
-			customInstructions,
-			alwaysAllowReadOnly: alwaysAllowReadOnly ?? false,
-			taskHistory,
-		}
+		},
+		lastShownAnnouncementId,
+		customInstructions,
+		alwaysAllowReadOnly: alwaysAllowReadOnly ?? false,
+		alwaysAutoSave: alwaysAutoSave ?? false,
+		alwaysAutoApprove: alwaysAutoApprove ?? false,
+		alwaysAutoRunCommands: alwaysAutoRunCommands ?? false,
+		taskHistory,
 	}
+}
 
 	async updateTaskHistory(item: HistoryItem): Promise<HistoryItem[]> {
 		const history = ((await this.getGlobalState("taskHistory")) as HistoryItem[]) || []

@@ -65,6 +65,9 @@ export class Cline {
 	private didEditFile: boolean = false
 	customInstructions?: string
 	alwaysAllowReadOnly: boolean
+	alwaysAutoSave: boolean
+	alwaysAutoApprove: boolean
+	alwaysAutoRunCommands: boolean
 	apiConversationHistory: Anthropic.MessageParam[] = []
 	clineMessages: ClineMessage[] = []
 	private askResponse?: ClineAskResponse
@@ -94,6 +97,9 @@ export class Cline {
 		apiConfiguration: ApiConfiguration,
 		customInstructions?: string,
 		alwaysAllowReadOnly?: boolean,
+		alwaysAutoSave?: boolean,
+		alwaysAutoApprove?: boolean,
+		alwaysAutoRunCommands?: boolean,
 		task?: string,
 		images?: string[],
 		historyItem?: HistoryItem
@@ -106,6 +112,9 @@ export class Cline {
 		this.diffViewProvider = new DiffViewProvider(cwd)
 		this.customInstructions = customInstructions
 		this.alwaysAllowReadOnly = alwaysAllowReadOnly ?? false
+		this.alwaysAutoSave = alwaysAutoSave ?? false
+		this.alwaysAutoApprove = alwaysAutoApprove ?? false
+		this.alwaysAutoRunCommands = alwaysAutoRunCommands ?? false
 
 		if (historyItem) {
 			this.taskId = historyItem.id
