@@ -952,6 +952,15 @@ export class Cline {
 				}
 
 				const askApproval = async (type: ClineAsk, partialMessage?: string) => {
+					// Check auto settings based on type
+					if (
+						(type === "tool" && this.alwaysAutoApprove) ||
+						(type === "command" && this.alwaysAutoRunCommands) ||
+						((type === "tool" && this.alwaysAutoSave) && partialMessage && JSON.parse(partialMessage).tool.includes("File"))
+					) {
+						return true;
+					}
+
 					const { response, text, images } = await this.ask(type, partialMessage, false)
 					if (response !== "yesButtonClicked") {
 						if (response === "messageResponse") {
