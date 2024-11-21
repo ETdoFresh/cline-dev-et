@@ -956,6 +956,7 @@ export class Cline {
 					if (
 						(type === "tool" && this.alwaysAutoApprove) ||
 						(type === "command" && this.alwaysAutoRunCommands) ||
+						(type === "browser_action_launch" && this.alwaysAutoApprove) ||
 						((type === "tool" && this.alwaysAutoSave) && partialMessage && JSON.parse(partialMessage).tool.includes("File"))
 					) {
 						return true;
