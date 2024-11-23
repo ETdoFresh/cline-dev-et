@@ -65,6 +65,9 @@ export class Cline {
 	private didEditFile: boolean = false
 	customInstructions?: string
 	alwaysAllowReadOnly: boolean
+	alwaysAutoSave: boolean
+	alwaysAutoApprove: boolean
+	alwaysAutoRunCommands: boolean
 	apiConversationHistory: Anthropic.MessageParam[] = []
 	clineMessages: ClineMessage[] = []
 	private askResponse?: ClineAskResponse
@@ -94,6 +97,9 @@ export class Cline {
 		apiConfiguration: ApiConfiguration,
 		customInstructions?: string,
 		alwaysAllowReadOnly?: boolean,
+		alwaysAutoSave?: boolean,
+		alwaysAutoApprove?: boolean,
+		alwaysAutoRunCommands?: boolean,
 		task?: string,
 		images?: string[],
 		historyItem?: HistoryItem,
@@ -106,6 +112,9 @@ export class Cline {
 		this.diffViewProvider = new DiffViewProvider(cwd)
 		this.customInstructions = customInstructions
 		this.alwaysAllowReadOnly = alwaysAllowReadOnly ?? false
+		this.alwaysAutoSave = alwaysAutoSave ?? false
+		this.alwaysAutoApprove = alwaysAutoApprove ?? false
+		this.alwaysAutoRunCommands = alwaysAutoRunCommands ?? false
 
 		if (historyItem) {
 			this.taskId = historyItem.id
@@ -943,6 +952,16 @@ export class Cline {
 				}
 
 				const askApproval = async (type: ClineAsk, partialMessage?: string) => {
+					// Check auto settings based on type
+					if (
+						(type === "tool" && this.alwaysAutoApprove) ||
+						(type === "command" && this.alwaysAutoRunCommands) ||
+						(type === "browser_action_launch" && this.alwaysAutoApprove) ||
+						((type === "tool" && this.alwaysAutoSave) && partialMessage && JSON.parse(partialMessage).tool.includes("File"))
+					) {
+						return true;
+					}
+
 					const { response, text, images } = await this.ask(type, partialMessage, false)
 					if (response !== "yesButtonClicked") {
 						if (response === "messageResponse") {

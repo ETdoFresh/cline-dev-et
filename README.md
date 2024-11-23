@@ -1,4 +1,4 @@
-# Cline (prev. Claude Dev) – \#1 on OpenRouter
+# Cline v2.1.6-et – \#1 on OpenRouter
 
 <p align="center">
   <img src="https://media.githubusercontent.com/media/cline/cline/main/assets/docs/demo.gif" width="100%" />
@@ -25,7 +25,7 @@
 
 Meet Cline, an AI assistant that can use your **CLI** a**N**d **E**ditor.
 
-Thanks to [Claude 3.5 Sonnet's agentic coding capabilities](https://www-cdn.anthropic.com/fed9cc193a14b84131812372d8d5857f8f304c52/Model_Card_Claude_3_Addendum.pdf), Cline can handle complex software development tasks step-by-step. With tools that let him create & edit files, explore large projects, use the browser, and execute terminal commands (after you grant permission), he can assist you in ways that go beyond code completion or tech support. While autonomous AI scripts traditionally run in sandboxed environments, this extension provides a human-in-the-loop GUI to approve every file change and terminal command, providing a safe and accessible way to explore the potential of agentic AI.
+Thanks to [Claude 3.5 Sonnet's agentic coding capabilities](https://www-cdn.anthropic.com/fed9cc193a14b84131812372d8d5857f8f304c52/Model_Card_Claude_3_Addendum.pdf), Cline can handle complex software development tasks step-by-step. With tools that let him create & edit files, explore large projects, use the browser, and execute terminal commands (after you grant permission), he can assist you in ways that go beyond code completion or tech support. While autonomous AI scripts traditionally run in sandboxed environments, this extension provides a human-in-the-loop GUI to approve every file change and terminal command, providing a safe and accessible way to explore the potential of agentic AI.
 
 1. Enter your task and add images to convert mockups into functional apps or fix bugs with screenshots.
 2. Cline starts by analyzing your file structure & source code ASTs, running regex searches, and reading relevant files to get up to speed in existing projects. By carefully managing what information is added to context, Cline can provide valuable assistance even for large, complex projects without overwhelming the context window.
@@ -33,10 +33,10 @@ Thanks to [Claude 3.5 Sonnet's agentic coding capabilities](https://www-cdn.ant
     - Create and edit files + monitor linter/compiler errors along the way, letting him proactively fix issues like missing imports and syntax errors on his own.
     - Execute commands directly in your terminal and monitor their output as he works, letting him e.g., react to dev server issues after editing a file.
     - For web development tasks, Cline can launch the site in a headless browser, click, type, scroll, and capture screenshots + console logs, allowing him to fix runtime errors and visual bugs.
-4. When a task is completed, Cline will present the result to you with a terminal command like `open -a "Google Chrome" index.html`, which you run with a click of a button.
+4. When a task is completed, Cline will present the result to you with a terminal command like `open -a "Google Chrome" index.html`, which you run with a click of a button.
 
 > [!TIP]
-> Use the `CMD/CTRL + Shift + P` shortcut to open the command palette and type "Cline: Open In New Tab" to open the extension as a tab in your editor. This lets you use Cline side-by-side with your file explorer, and see how he changes your workspace more clearly.
+> Use the `CMD/CTRL + Shift + P` shortcut to open the command palette and type "Cline: Open In New Tab" to open the extension as a tab in your editor. This lets you use Cline side-by-side with your file explorer, and see how he changes your workspace more clearly.
 
 ---
 
@@ -58,7 +58,7 @@ The extension also keeps track of total tokens and API usage cost for the entire
 
 Thanks to the new [shell integration updates in VSCode v1.93](https://code.visualstudio.com/updates/v1_93#_terminal-shell-integration-api), Cline can execute commands directly in your terminal and receive the output. This allows him to perform a wide range of tasks, from installing packages and running build scripts to deploying applications, managing databases, and executing tests, all while adapting to your dev environment & toolchain to get the job done right.
 
-For long running processes like dev servers, use the "Proceed While Running" button to let Cline continue in the task while the command runs in the background. As Cline works he’ll be notified of any new terminal output along the way, letting him react to issues that may come up, such as compile-time errors when editing files.
+For long running processes like dev servers, use the "Proceed While Running" button to let Cline continue in the task while the command runs in the background. As Cline works he'll be notified of any new terminal output along the way, letting him react to issues that may come up, such as compile-time errors when editing files.
 
 <!-- Transparent pixel to create line break after floating image -->
 
@@ -92,10 +92,19 @@ Try asking Cline to "test the app", and watch as he runs a command like `npm run
 
 ### Add Context
 
--   **`@url`:** Paste in a URL for the extension to fetch and convert to markdown, useful when you want to give Cline the latest docs
--   **`@problems`:** Add workspace errors and warnings ('Problems' panel) for Cline to fix
--   **`@file`:** Adds a file's contents so you don't have to waste API requests approving read file (+ type to search files)
--   **`@folder`:** Adds folder's files all at once to speed up your workflow even more
+-   **`@url`:** Paste in a URL for the extension to fetch and convert to markdown, useful when you want to give Cline the latest docs
+-   **`@problems`:** Add workspace errors and warnings ('Problems' panel) for Cline to fix
+-   **`@file`:** Adds a file's contents so you don't have to waste API requests approving read file (+ type to search files)
+-   **`@folder`:** Adds folder's files all at once to speed up your workflow even more
+
+### Auto Settings
+
+Cline now features intelligent auto settings that streamline your workflow:
+- **Auto File Operations:** Automatically approve file read/write operations for trusted paths
+- **Auto Command Execution:** Configure commands that can run without explicit approval
+- **Browser Launch Auto-approval:** Streamline browser-based testing and debugging by auto-approving browser launch actions
+
+These settings help reduce friction while maintaining security through granular controls over what actions can be automated.
 
 ## Contributing
 
@@ -117,6 +126,10 @@ To contribute to the project, start by exploring [open issues](https://github.co
     npm run install:all
     ```
 4. Launch by pressing `F5` (or `Run`->`Start Debugging`) to open a new VSCode window with the extension loaded. (You may need to install the [esbuild problem matchers extension](https://marketplace.visualstudio.com/items?itemName=connor4312.esbuild-problem-matchers) if you run into issues building the project.)
+
+The extension version is now displayed in the UI, making it easier to track which version you're running during development.
+
+For code organization guidelines and best practices, refer to the decomposition documentation in the prompts directory.
 
 </details>
 
