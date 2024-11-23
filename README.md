@@ -1,3 +1,6 @@
+# PLEASE NOTE -- THIS IS A FORK OF https://github.com/cline/cline
+Please use above instead unless you want my personal version of this software.
+
 # Cline v2.1.6-et – \#1 on OpenRouter
 
 <p align="center">
