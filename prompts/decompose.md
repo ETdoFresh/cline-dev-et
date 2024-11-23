@@ -13,5 +13,7 @@
 - Ensure each file contains only one logical unit (method, data block, or event block).
 - Follow consistent naming conventions as specified.
 - Maintain clarity and simplicity in each file.
+- **Public Call Signatures:** Ensure that all public call signatures remain the same. If methods are moved from `Class` to `Class.Method`, forward the function reference as needed to avoid breaking existing references.
 
 **Comments:** Keep comments minimal or omit them unless specified by the user.
+
