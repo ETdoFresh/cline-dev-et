@@ -89,6 +89,11 @@ declare module "vscode" {
 	}
 }
 
+// Maximum number of retries for shell integration activation
+const MAX_RETRIES = 3
+// Increased timeout for shell integration activation (10 seconds)
+const SHELL_INTEGRATION_TIMEOUT = 10000
+
 export class TerminalManager {
 	private terminalIds: Set<number> = new Set()
 	private processes: Map<number, TerminalProcess> = new Map()
@@ -102,10 +107,29 @@ export class TerminalManager {
 				e?.execution?.read()
 			})
 		} catch (error) {
-			// console.error("Error setting up onDidEndTerminalShellExecution", error)
+			console.error("Error setting up onDidStartTerminalShellExecution", error)
 		}
 		if (disposable) {
 			this.disposables.push(disposable)
+		}
+	}
+
+	private async waitForShellIntegration(terminal: vscode.Terminal, retryCount: number = 0): Promise<boolean> {
+		try {
+			await pWaitFor(() => terminal.shellIntegration !== undefined, { timeout: SHELL_INTEGRATION_TIMEOUT })
+			return true
+		} catch (error) {
+			console.warn(`Shell integration activation attempt ${retryCount + 1} failed:`, error)
+			
+			if (retryCount < MAX_RETRIES) {
+				console.log(`Retrying shell integration activation (attempt ${retryCount + 2}/${MAX_RETRIES + 1})`)
+				// Add a small delay before retrying
+				await new Promise(resolve => setTimeout(resolve, 1000))
+				return this.waitForShellIntegration(terminal, retryCount + 1)
+			}
+			
+			console.error("Shell integration activation failed after all retries")
+			return false
 		}
 	}
 
@@ -119,7 +143,6 @@ export class TerminalManager {
 			terminalInfo.busy = false
 		})
 
-		// if shell integration is not available, remove terminal so it does not get reused as it may be running a long-running process
 		process.once("no_shell_integration", () => {
 			console.log(`no_shell_integration received for terminal ${terminalInfo.id}`)
 			// Remove the terminal so we can't reuse it (in case it's running a long-running process)
@@ -143,12 +166,19 @@ export class TerminalManager {
 			process.waitForShellIntegration = false
 			process.run(terminalInfo.terminal, command)
 		} else {
-			// docs recommend waiting 3s for shell integration to activate
-			pWaitFor(() => terminalInfo.terminal.shellIntegration !== undefined, { timeout: 4000 }).finally(() => {
+			// Wait for shell integration with retries
+			this.waitForShellIntegration(terminalInfo.terminal).then((success) => {
 				const existingProcess = this.processes.get(terminalInfo.id)
 				if (existingProcess && existingProcess.waitForShellIntegration) {
 					existingProcess.waitForShellIntegration = false
-					existingProcess.run(terminalInfo.terminal, command)
+					if (success) {
+						existingProcess.run(terminalInfo.terminal, command)
+					} else {
+						// If shell integration failed after all retries, fall back to basic execution
+						console.log(`Falling back to basic execution for terminal ${terminalInfo.id}`)
+						terminalInfo.terminal.sendText(command, true)
+						existingProcess.emit("no_shell_integration")
+					}
 				}
 			})
 		}
@@ -199,9 +229,6 @@ export class TerminalManager {
 	}
 
 	disposeAll() {
-		// for (const info of this.terminals) {
-		// 	//info.terminal.dispose() // dont want to dispose terminals when task is aborted
-		// }
 		this.terminalIds.clear()
 		this.processes.clear()
 		this.disposables.forEach((disposable) => disposable.dispose())
