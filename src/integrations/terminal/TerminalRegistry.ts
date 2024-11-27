@@ -24,6 +24,24 @@ export class TerminalRegistry {
 	private static nextTerminalId = 1
 
 	static createTerminal(cwd?: string | vscode.Uri | undefined): TerminalInfo {
+		// First check for existing "Cline" terminals in VSCode that aren't in our registry
+		const existingTerminal = vscode.window.terminals.find(t => 
+			t.name === "Cline" && !this.terminals.some(rt => rt.terminal === t)
+		)
+
+		if (existingTerminal) {
+			// Reuse the existing terminal
+			existingTerminal.show(false)
+			const newInfo: TerminalInfo = {
+				terminal: existingTerminal,
+				busy: false,
+				lastCommand: "",
+				id: this.nextTerminalId++,
+			}
+			this.terminals.push(newInfo)
+			return newInfo
+		}
+
 		// Create terminal with explicit shell integration settings
 		const options: vscode.TerminalOptions = {
 			cwd,

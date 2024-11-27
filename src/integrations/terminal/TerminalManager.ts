@@ -187,22 +187,25 @@ export class TerminalManager {
 	}
 
 	async getOrCreateTerminal(cwd: string): Promise<TerminalInfo> {
-		// Find available terminal from our pool first (created for this task)
+		// First try to find an existing terminal with matching cwd that isn't busy
 		const availableTerminal = TerminalRegistry.getAllTerminals().find((t) => {
-			if (t.busy) {
-				return false
+			if (t.busy) return false
+			
+			// Check if terminal has shell integration and matching cwd
+			const terminalCwd = t.terminal.shellIntegration?.cwd
+			if (terminalCwd) {
+				return arePathsEqual(vscode.Uri.file(cwd).fsPath, terminalCwd.fsPath)
 			}
-			const terminalCwd = t.terminal.shellIntegration?.cwd // one of cline's commands could have changed the cwd of the terminal
-			if (!terminalCwd) {
-				return false
-			}
-			return arePathsEqual(vscode.Uri.file(cwd).fsPath, terminalCwd.fsPath)
+			
+			return false
 		})
+
 		if (availableTerminal) {
 			this.terminalIds.add(availableTerminal.id)
 			return availableTerminal
 		}
 
+		// If no terminal with matching cwd found, createTerminal will check for any existing "Cline" terminals
 		const newTerminalInfo = TerminalRegistry.createTerminal(cwd)
 		this.terminalIds.add(newTerminalInfo.id)
 		return newTerminalInfo
