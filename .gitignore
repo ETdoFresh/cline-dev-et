@@ -5,3 +5,7 @@ node_modules
 *.vsix
 
 .DS_Store
+
+# Generated JavaScript files and source maps
+src/**/*.js
+src/**/*.js.map
