@@ -3,29 +3,55 @@ import { McpHub } from "../../services/mcp/McpHub"
 import osName from "os-name"
 import defaultShell from "default-shell"
 import { logPrompt } from "../../utils/logging"
-import fs from "fs"
 import path from "path"
+
+// Import tool definitions
+import accessMcpResource from './tools/access_mcp_resource.json'
+import askFollowupQuestion from './tools/ask_followup_question.json'
+import attemptCompletion from './tools/attempt_completion.json'
+import browserAction from './tools/browser_action.json'
+import executeCommand from './tools/execute_command.json'
+import listCodeDefinitionNames from './tools/list_code_definition_names.json'
+import listFiles from './tools/list_files.json'
+import readFile from './tools/read_file.json'
+import searchFiles from './tools/search_files.json'
+import useMcpTool from './tools/use_mcp_tool.json'
+import writeToFile from './tools/write_to_file.json'
 
 interface ToolParameter {
   name: string;
   description: string;
 }
 
+interface UsageValue {
+  [key: string]: string | { [key: string]: string };
+}
+
 interface ToolDefinition {
   name: string;
   description: string;
   parameters: ToolParameter[];
-  usage: Record<string, Record<string, string>>;
+  usage: {
+    [key: string]: UsageValue;
+  };
 }
 
+const toolDefinitions: ToolDefinition[] = [
+  accessMcpResource,
+  askFollowupQuestion,
+  attemptCompletion,
+  browserAction,
+  executeCommand,
+  listCodeDefinitionNames,
+  listFiles,
+  readFile,
+  searchFiles,
+  useMcpTool,
+  writeToFile
+];
+
 const loadToolDefinitions = () => {
-  const toolsDir = path.join(__dirname, 'tools');
-  const toolFiles = fs.readdirSync(toolsDir).filter(file => file.endsWith('.json'));
-  
-  return toolFiles.map(file => {
-    const toolContent = fs.readFileSync(path.join(toolsDir, file), 'utf-8');
-    const toolDef = JSON.parse(toolContent) as ToolDefinition;
-    
+  return toolDefinitions.map(toolDef => {
     return `        <tool>
             <name>${toolDef.name}</name>
             <description>
@@ -40,7 +66,7 @@ const loadToolDefinitions = () => {
                 ${Object.entries(toolDef.usage).map(([key, value]) => 
                   `<${key}>
                     ${Object.entries(value).map(([k, v]) => 
-                      `<${k}>${v}</${k}>`
+                      `<${k}>${typeof v === 'object' ? Object.entries(v).map(([kk, vv]) => `<${kk}>${vv}</${kk}>`).join('\n                    ') : v}</${k}>`
                     ).join('\n                    ')}
                 </${key}>`
                 ).join('\n                ')}
@@ -93,8 +119,7 @@ ${server.tools.map((tool) => {
   <description>${tool.description}</description>
   ${schemaStr}
 </mcp-tool>`;
-        }).join('\n')}
-</mcp-tools>`
+        }).join('\n')}`
         : "";
 
       const serverResources = server.resources?.length
@@ -105,8 +130,7 @@ ${server.resources.map((resource) => {
   <name>${resource.name}</name>
   <description>${resource.description}</description>
 </mcp-resource>`;
-        }).join('\n')}
-</mcp-resources>`
+        }).join('\n')}`
         : "";
 
       const serverTemplates = server.resourceTemplates?.length
@@ -117,8 +141,7 @@ ${server.resourceTemplates.map((template) => {
   <name>${template.name}</name>
   <description>${template.description}</description>
 </mcp-resource-template>`;
-        }).join('\n')}
-</mcp-resource-templates>`
+        }).join('\n')}`
         : "";
 
       return `<mcp-server name="${serverName}">
@@ -128,11 +151,10 @@ ${server.resourceTemplates.map((template) => {
   ${serverResources}
   ${serverTemplates}
 </mcp-server>`;
-    }).join('\n')}
-</mcp-servers>`
+    }).join('\n')}`
     : `<mcp-servers><no-servers-connected/></mcp-servers>`;
 
-  const toolDefinitions = loadToolDefinitions();
+  const toolDefinitionsXML = loadToolDefinitions();
 
   const systemPrompt = `<purpose>
     You are CommitAi, a highly skilled software engineer with extensive knowledge in many programming languages, frameworks, design patterns, and best practices.
@@ -186,7 +208,7 @@ ${customInstructions}
     </objective>
 
     <tools>
-        ${toolDefinitions}
+        ${toolDefinitionsXML}
 
         ${mcpServersXML}
     </tools>
@@ -248,7 +270,8 @@ ${customInstructions}
             </write_to_file>
         </tool_use>
     </example>
-</examples>`
+</examples>
+`
     logPrompt(systemPrompt)
     return systemPrompt
 }
