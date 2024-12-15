@@ -1,6 +1,6 @@
 # Build Instructions
 
-To build the VSCode extension:
+To build the extension:
 
 1. Ensure you have the required dependencies installed:
    ```bash
@@ -12,15 +12,9 @@ To build the VSCode extension:
    vsce package
    ```
 
-This will create a .vsix file that can be installed in VSCode or Windsurf.
+This will create a .vsix file that can be installed in Windsurf.
 
 ## Installation
-
-### VSCode
-You can install the .vsix file in VSCode using:
-```bash
-code --install-extension claude-dev-2.2.2-et.vsix
-```
 
 ### Windsurf
 To install the extension in Windsurf, use:

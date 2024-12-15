@@ -6,6 +6,7 @@ import { ClineProvider } from "./core/webview/ClineProvider"
 import { createClineAPI } from "./exports"
 import "./utils/path" // necessary to have access to String.prototype.toPosix
 import { DIFF_VIEW_URI_SCHEME } from "./integrations/editor/DiffViewProvider"
+import { initializeLogging } from "./utils/logging"
 
 /*
 Built using https://github.com/microsoft/vscode-webview-ui-toolkit
@@ -23,6 +24,9 @@ let outputChannel: vscode.OutputChannel
 export function activate(context: vscode.ExtensionContext) {
 	outputChannel = vscode.window.createOutputChannel("Cline")
 	context.subscriptions.push(outputChannel)
+
+	// Initialize logging with the output channel
+	initializeLogging(outputChannel)
 
 	outputChannel.appendLine("Cline extension activated")
 

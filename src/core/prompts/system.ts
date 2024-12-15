@@ -2,6 +2,7 @@ import os from "os"
 import { McpHub } from "../../services/mcp/McpHub"
 import osName from "os-name"
 import defaultShell from "default-shell"
+import { logPrompt } from "../../utils/logging"
 
 export const SYSTEM_PROMPT = async (
   cwd: string,
@@ -24,6 +25,13 @@ export const SYSTEM_PROMPT = async (
   }
 
   const connectedServers = mcpHub.getServers().filter((server) => server.status === "connected");
+
+  // Log server tools to debug console
+  connectedServers.forEach(server => {
+    if (server.tools && server.tools.length > 0) {
+      console.log(`Server ${server.name} tools:`, server.tools.map(tool => tool.name));
+    }
+  });
 
   const mcpServersXML = connectedServers.length > 0
     ? `<mcp-servers>
@@ -81,7 +89,7 @@ ${server.resourceTemplates.map((template) => {
 </mcp-servers>`
     : `<mcp-servers><no-servers-connected/></mcp-servers>`;
 
-  return `<purpose>
+  const systemPrompt = `<purpose>
     You are CommitAi, a highly skilled software engineer with extensive knowledge in many programming languages, frameworks, design patterns, and best practices.
 </purpose>
 
@@ -386,4 +394,6 @@ ${customInstructions}
         </tool_use>
     </example>
 </examples>`
+    logPrompt(systemPrompt)
+    return systemPrompt
 }
