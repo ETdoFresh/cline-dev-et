@@ -19,6 +19,12 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 		setCustomInstructions,
 		alwaysAllowReadOnly,
 		setAlwaysAllowReadOnly,
+		alwaysAutoSave,
+		setAlwaysAutoSave,
+		alwaysAutoApprove,
+		setAlwaysAutoApprove,
+		alwaysAutoRunCommands,
+		setAlwaysAutoRunCommands,
 		openRouterModels,
 	} = useExtensionState()
 	const [apiErrorMessage, setApiErrorMessage] = useState<string | undefined>(undefined)
@@ -33,6 +39,9 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 			vscode.postMessage({ type: "apiConfiguration", apiConfiguration })
 			vscode.postMessage({ type: "customInstructions", text: customInstructions })
 			vscode.postMessage({ type: "alwaysAllowReadOnly", bool: alwaysAllowReadOnly })
+			vscode.postMessage({ type: "alwaysAutoSave", bool: alwaysAutoSave })
+			vscode.postMessage({ type: "alwaysAutoApprove", bool: alwaysAutoApprove })
+			vscode.postMessage({ type: "alwaysAutoRunCommands", bool: alwaysAutoRunCommands })
 			onDone()
 		}
 	}
@@ -41,18 +50,6 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 		setApiErrorMessage(undefined)
 		setModelIdErrorMessage(undefined)
 	}, [apiConfiguration])
-
-	// validate as soon as the component is mounted
-	/*
-	useEffect will use stale values of variables if they are not included in the dependency array. so trying to use useEffect with a dependency array of only one value for example will use any other variables' old values. In most cases you don't want this, and should opt to use react-use hooks.
-	
-	useEffect(() => {
-		// uses someVar and anotherVar
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [someVar])
-
-	If we only want to run code once on mount we can use react-use's useEffectOnce or useMount
-	*/
 
 	const handleResetState = () => {
 		vscode.postMessage({ type: "resetState" })
@@ -127,6 +124,54 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 						}}>
 						When enabled, Cline will automatically view directory contents and read files without requiring
 						you to click the Approve button.
+					</p>
+				</div>
+
+				<div style={{ marginBottom: 5 }}>
+					<VSCodeCheckbox
+						checked={alwaysAutoSave}
+						onChange={(e: any) => setAlwaysAutoSave(e.target.checked)}>
+						<span style={{ fontWeight: "500" }}>Always auto-save files</span>
+					</VSCodeCheckbox>
+					<p
+						style={{
+							fontSize: "12px",
+							marginTop: "5px",
+							color: "var(--vscode-descriptionForeground)",
+						}}>
+						When enabled, Cline will automatically save file changes without requiring approval.
+					</p>
+				</div>
+
+				<div style={{ marginBottom: 5 }}>
+					<VSCodeCheckbox
+						checked={alwaysAutoApprove}
+						onChange={(e: any) => setAlwaysAutoApprove(e.target.checked)}>
+						<span style={{ fontWeight: "500" }}>Always auto-approve operations</span>
+					</VSCodeCheckbox>
+					<p
+						style={{
+							fontSize: "12px",
+							marginTop: "5px",
+							color: "var(--vscode-descriptionForeground)",
+						}}>
+						When enabled, Cline will automatically approve all operations without requiring confirmation.
+					</p>
+				</div>
+
+				<div style={{ marginBottom: 5 }}>
+					<VSCodeCheckbox
+						checked={alwaysAutoRunCommands}
+						onChange={(e: any) => setAlwaysAutoRunCommands(e.target.checked)}>
+						<span style={{ fontWeight: "500" }}>Always auto-run commands</span>
+					</VSCodeCheckbox>
+					<p
+						style={{
+							fontSize: "12px",
+							marginTop: "5px",
+							color: "var(--vscode-descriptionForeground)",
+						}}>
+						When enabled, Cline will automatically execute terminal commands without requiring approval.
 					</p>
 				</div>
 

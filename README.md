@@ -1,4 +1,8 @@
-# Cline (prev. Claude Dev) – \#1 on OpenRouter
+# PLEASE NOTE -- THIS IS A FORK OF
+# https://github.com/cline/cline
+Please use above instead unless you want my personal version of this software.
+
+# Cline v2.1.6-et – #1 on OpenRouter
 
 <p align="center">
   <img src="https://media.githubusercontent.com/media/cline/cline/main/assets/docs/demo.gif" width="100%" />
@@ -25,7 +29,7 @@
 
 Meet Cline, an AI assistant that can use your **CLI** a**N**d **E**ditor.
 
-Thanks to [Claude 3.5 Sonnet's agentic coding capabilities](https://www-cdn.anthropic.com/fed9cc193a14b84131812372d8d5857f8f304c52/Model_Card_Claude_3_Addendum.pdf), Cline can handle complex software development tasks step-by-step. With tools that let him create & edit files, explore large projects, use the browser, and execute terminal commands (after you grant permission), he can assist you in ways that go beyond code completion or tech support. Cline can even use the Model Context Protocol (MCP) to create new tools and extend his own capabilities. While autonomous AI scripts traditionally run in sandboxed environments, this extension provides a human-in-the-loop GUI to approve every file change and terminal command, providing a safe and accessible way to explore the potential of agentic AI.
+Thanks to [Claude 3.5 Sonnet's agentic coding capabilities](https://www-cdn.anthropic.com/fed9cc193a14b84131812372d8d5857f8f304c52/Model_Card_Claude_3_Addendum.pdf), Cline can handle complex software development tasks step-by-step. With tools that let him create & edit files, explore large projects, use the browser, and execute terminal commands (after you grant permission), he can assist you in ways that go beyond code completion or tech support. Cline can even use the Model Context Protocol (MCP) to create new tools and extend his own capabilities. While autonomous AI scripts traditionally run in sandboxed environments, this extension provides a human-in-the-loop GUI to approve every file change and terminal command, providing a safe and accessible way to explore the potential of agentic AI.
 
 1. Enter your task and add images to convert mockups into functional apps or fix bugs with screenshots.
 2. Cline starts by analyzing your file structure & source code ASTs, running regex searches, and reading relevant files to get up to speed in existing projects. By carefully managing what information is added to context, Cline can provide valuable assistance even for large, complex projects without overwhelming the context window.
@@ -33,10 +37,10 @@ Thanks to [Claude 3.5 Sonnet's agentic coding capabilities](https://www-cdn.ant
     - Create and edit files + monitor linter/compiler errors along the way, letting him proactively fix issues like missing imports and syntax errors on his own.
     - Execute commands directly in your terminal and monitor their output as he works, letting him e.g., react to dev server issues after editing a file.
     - For web development tasks, Cline can launch the site in a headless browser, click, type, scroll, and capture screenshots + console logs, allowing him to fix runtime errors and visual bugs.
-4. When a task is completed, Cline will present the result to you with a terminal command like `open -a "Google Chrome" index.html`, which you run with a click of a button.
+4. When a task is completed, Cline will present the result to you with a terminal command like `open -a "Google Chrome" index.html`, which you run with a click of a button.
 
 > [!TIP]
-> Use the `CMD/CTRL + Shift + P` shortcut to open the command palette and type "Cline: Open In New Tab" to open the extension as a tab in your editor. This lets you use Cline side-by-side with your file explorer, and see how he changes your workspace more clearly.
+> Use the `CMD/CTRL + Shift + P` shortcut to open the command palette and type "Cline: Open In New Tab" to open the extension as a tab in your editor. This lets you use Cline side-by-side with your file explorer, and see how he changes your workspace more clearly.
 
 ---
 
@@ -48,8 +52,7 @@ Cline supports API providers like OpenRouter, Anthropic, OpenAI, Google Gemini, 
 
 The extension also keeps track of total tokens and API usage cost for the entire task loop and individual requests, keeping you informed of spend every step of the way.
 
-<!-- Transparent pixel to create line break after floating image -->
-
+<!-- Transparent pixel to create line break after floating image
 <img width="2000" height="0" src="https://github.com/user-attachments/assets/ee14e6f7-20b8-4391-9091-8e8e25561929"><br>
 
 <img align="left" width="370" src="https://github.com/user-attachments/assets/81be79a8-1fdb-4028-9129-5fe055e01e76">
@@ -58,10 +61,9 @@ The extension also keeps track of total tokens and API usage cost for the entire
 
 Thanks to the new [shell integration updates in VSCode v1.93](https://code.visualstudio.com/updates/v1_93#_terminal-shell-integration-api), Cline can execute commands directly in your terminal and receive the output. This allows him to perform a wide range of tasks, from installing packages and running build scripts to deploying applications, managing databases, and executing tests, all while adapting to your dev environment & toolchain to get the job done right.
 
-For long running processes like dev servers, use the "Proceed While Running" button to let Cline continue in the task while the command runs in the background. As Cline works he’ll be notified of any new terminal output along the way, letting him react to issues that may come up, such as compile-time errors when editing files.
+For long running processes like dev servers, use the "Proceed While Running" button to let Cline continue in the task while the command runs in the background. As Cline works he'll be notified of any new terminal output along the way, letting him react to issues that may come up, such as compile-time errors when editing files.
 
-<!-- Transparent pixel to create line break after floating image -->
-
+<!-- Transparent pixel to create line break after floating image
 <img width="2000" height="0" src="https://github.com/user-attachments/assets/ee14e6f7-20b8-4391-9091-8e8e25561929"><br>
 
 <img align="right" width="400" src="https://github.com/user-attachments/assets/c5977833-d9b8-491e-90f9-05f9cd38c588">
@@ -72,8 +74,7 @@ Cline can create and edit files directly in your editor, presenting you a diff v
 
 All changes made by Cline are recorded in your file's Timeline, providing an easy way to track and revert modifications if needed.
 
-<!-- Transparent pixel to create line break after floating image -->
-
+<!-- Transparent pixel to create line break after floating image
 <img width="2000" height="0" src="https://github.com/user-attachments/assets/ee14e6f7-20b8-4391-9091-8e8e25561929"><br>
 
 <img align="left" width="370" src="https://github.com/user-attachments/assets/bc2e85ba-dfeb-4fe6-9942-7cfc4703cbe5">
@@ -84,8 +85,7 @@ With Claude 3.5 Sonnet's new [Computer Use](https://www.anthropic.com/news/3-5-m
 
 Try asking Cline to "test the app", and watch as he runs a command like `npm run dev`, launches your locally running dev server in a browser, and performs a series of tests to confirm that everything works. [See a demo here.](https://x.com/sdrzn/status/1850880547825823989)
 
-<!-- Transparent pixel to create line break after floating image -->
-
+<!-- Transparent pixel to create line break after floating image
 <img width="2000" height="0" src="https://github.com/user-attachments/assets/ee14e6f7-20b8-4391-9091-8e8e25561929"><br>
 
 <img align="right" width="350" src="https://github.com/user-attachments/assets/ac0efa14-5c1f-4c26-a42d-9d7c56f5fadd">
@@ -98,21 +98,26 @@ Thanks to the [Model Context Protocol](https://github.com/modelcontextprotocol),
 -   "add a tool that manages AWS EC2s": Check server metrics and scale instances up or down
 -   "add a tool that pulls the latest PagerDuty incidents": Fetch details and ask Cline to fix bugs
 
-<!-- Transparent pixel to create line break after floating image -->
-
+<!-- Transparent pixel to create line break after floating image
 <img width="2000" height="0" src="https://github.com/user-attachments/assets/ee14e6f7-20b8-4391-9091-8e8e25561929"><br>
 
 <img align="left" width="360" src="https://github.com/user-attachments/assets/7fdf41e6-281a-4b4b-ac19-020b838b6970">
 
 ### Add Context
 
-**`@url`:** Paste in a URL for the extension to fetch and convert to markdown, useful when you want to give Cline the latest docs
+-   **`@url`:** Paste in a URL for the extension to fetch and convert to markdown, useful when you want to give Cline the latest docs
+-   **`@problems`:** Add workspace errors and warnings ('Problems' panel) for Cline to fix
+-   **`@file`:** Adds a file's contents so you don't have to waste API requests approving read file (+ type to search files)
+-   **`@folder`:** Adds folder's files all at once to speed up your workflow even more
 
-**`@problems`:** Add workspace errors and warnings ('Problems' panel) for Cline to fix
+### Auto Settings
 
-**`@file`:** Adds a file's contents so you don't have to waste API requests approving read file (+ type to search files)
+Cline now features intelligent auto settings that streamline your workflow:
+- **Auto File Operations:** Automatically approve file read/write operations for trusted paths
+- **Auto Command Execution:** Configure commands that can run without explicit approval
+- **Browser Launch Auto-approval:** Streamline browser-based testing and debugging by auto-approving browser launch actions
 
-**`@folder`:** Adds folder's files all at once to speed up your workflow even more
+These settings help reduce friction while maintaining security through granular controls over what actions can be automated.
 
 ## Contributing
 
@@ -135,8 +140,12 @@ To contribute to the project, start by exploring [open issues](https://github.co
     ```
 4. Launch by pressing `F5` (or `Run`->`Start Debugging`) to open a new VSCode window with the extension loaded. (You may need to install the [esbuild problem matchers extension](https://marketplace.visualstudio.com/items?itemName=connor4312.esbuild-problem-matchers) if you run into issues building the project.)
 
+The extension version is now displayed in the UI, making it easier to track which version you're running during development.
+
+For code organization guidelines and best practices, refer to the decomposition documentation in the prompts directory.
+
 </details>
 
 ## License
 
-[Apache 2.0 © 2024 Cline Bot Inc.](./LICENSE)
+[Apache 2.0 2024 Cline Bot Inc.](./LICENSE)
