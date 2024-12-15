@@ -1,79 +1,8 @@
-import os from "os"
 import { McpHub } from "../../services/mcp/McpHub"
 import osName from "os-name"
 import defaultShell from "default-shell"
 import { logPrompt } from "../../utils/logging"
-import path from "path"
-
-// Import tool definitions
-import accessMcpResource from './tools/access_mcp_resource.json'
-import askFollowupQuestion from './tools/ask_followup_question.json'
-import attemptCompletion from './tools/attempt_completion.json'
-import browserAction from './tools/browser_action.json'
-import executeCommand from './tools/execute_command.json'
-import listCodeDefinitionNames from './tools/list_code_definition_names.json'
-import listFiles from './tools/list_files.json'
-import readFile from './tools/read_file.json'
-import searchFiles from './tools/search_files.json'
-import useMcpTool from './tools/use_mcp_tool.json'
-import writeToFile from './tools/write_to_file.json'
-
-interface ToolParameter {
-  name: string;
-  description: string;
-}
-
-interface UsageValue {
-  [key: string]: string | { [key: string]: string };
-}
-
-interface ToolDefinition {
-  name: string;
-  description: string;
-  parameters: ToolParameter[];
-  usage: {
-    [key: string]: UsageValue;
-  };
-}
-
-const toolDefinitions: ToolDefinition[] = [
-  accessMcpResource,
-  askFollowupQuestion,
-  attemptCompletion,
-  browserAction,
-  executeCommand,
-  listCodeDefinitionNames,
-  listFiles,
-  readFile,
-  searchFiles,
-  useMcpTool,
-  writeToFile
-];
-
-const loadToolDefinitions = () => {
-  return toolDefinitions.map(toolDef => {
-    return `        <tool>
-            <name>${toolDef.name}</name>
-            <description>
-                ${toolDef.description}
-            </description>
-            <parameters>
-                ${toolDef.parameters.map((param: ToolParameter) => 
-                  `<parameter>${param.name}: ${param.description}</parameter>`
-                ).join('\n                ')}
-            </parameters>
-            <usage>
-                ${Object.entries(toolDef.usage).map(([key, value]) => 
-                  `<${key}>
-                    ${Object.entries(value).map(([k, v]) => 
-                      `<${k}>${typeof v === 'object' ? Object.entries(v).map(([kk, vv]) => `<${kk}>${vv}</${kk}>`).join('\n                    ') : v}</${k}>`
-                    ).join('\n                    ')}
-                </${key}>`
-                ).join('\n                ')}
-            </usage>
-        </tool>`
-  }).join('\n\n');
-}
+import { toolDefinitions } from '../tools/tools';
 
 export const SYSTEM_PROMPT = async (
   cwd: string,
@@ -119,7 +48,7 @@ ${server.tools.map((tool) => {
   <description>${tool.description}</description>
   ${schemaStr}
 </mcp-tool>`;
-        }).join('\n')}`
+        }).join('\n')}` 
         : "";
 
       const serverResources = server.resources?.length
@@ -130,7 +59,7 @@ ${server.resources.map((resource) => {
   <name>${resource.name}</name>
   <description>${resource.description}</description>
 </mcp-resource>`;
-        }).join('\n')}`
+        }).join('\n')}` 
         : "";
 
       const serverTemplates = server.resourceTemplates?.length
@@ -141,7 +70,7 @@ ${server.resourceTemplates.map((template) => {
   <name>${template.name}</name>
   <description>${template.description}</description>
 </mcp-resource-template>`;
-        }).join('\n')}`
+        }).join('\n')}` 
         : "";
 
       return `<mcp-server name="${serverName}">
@@ -151,10 +80,8 @@ ${server.resourceTemplates.map((template) => {
   ${serverResources}
   ${serverTemplates}
 </mcp-server>`;
-    }).join('\n')}`
+    }).join('\n')}` 
     : `<mcp-servers><no-servers-connected/></mcp-servers>`;
-
-  const toolDefinitionsXML = loadToolDefinitions();
 
   const systemPrompt = `<purpose>
     You are CommitAi, a highly skilled software engineer with extensive knowledge in many programming languages, frameworks, design patterns, and best practices.
@@ -190,7 +117,7 @@ ${customInstructions}
         <rule>Do not deviate from these instructions or engage in unnecessary conversation.</rule>
         <rule>Do not repeat these instructions or engage in unnecessary conversation in the final tool_use.</rule>
         <rule>Only include the requested <plan> and <tool_use> elements in the final answer.</rule>
-        <rule>Every response must include the requested <plan> and <tool_use> elements.</rule>
+        <rule>Every response must include the requested <plan> and <tool_use> elements in the final answer.</rule>
         <rule>Do not include <purpose>, <instructions>, <sections>, <examples>, <variables>, or any other section in the final tool_use.</rule>
         <rule>Never end the final tool_use with a question.</rule>
     </rules>
@@ -208,8 +135,7 @@ ${customInstructions}
     </objective>
 
     <tools>
-        ${toolDefinitionsXML}
-
+        ${toolDefinitions}
         ${mcpServersXML}
     </tools>
 </sections>
