@@ -2,7 +2,7 @@
 # https://github.com/cline/cline
 Please use above instead unless you want my personal version of this software.
 
-# Cline v2.1.6-et – #1 on OpenRouter
+# Cline v2.2.2-et – #1 on OpenRouter
 
 <p align="center">
   <img src="https://media.githubusercontent.com/media/cline/cline/main/assets/docs/demo.gif" width="100%" />
