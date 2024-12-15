@@ -1,15 +1,17 @@
 import os from "os"
 import { McpHub } from "../../services/mcp/McpHub"
+import osName from "os-name"
+import defaultShell from "default-shell"
 
 export const SYSTEM_PROMPT = async (
-	cwd: string,
+  cwd: string,
   customInstructions: string | undefined,
-	supportsComputerUse: boolean,
-	mcpHub: McpHub,
+  supportsComputerUse: boolean,
+  mcpHub: McpHub,
 ) => {
-  var operatingSystem = os.version();
-  var defaultShell = process.title;
-  var currentWorkingDirectory = cwd;
+  var operatingSystem = osName();
+  var currentWorkingDirectory = cwd.toPosix();
+
   if (customInstructions) {
     customInstructions = customInstructions.trim();
     var listOfCustomInstructions = customInstructions.split("\n");
@@ -17,10 +19,67 @@ export const SYSTEM_PROMPT = async (
     customInstructions = listOfCustomInstructions
       .map((eachInstruction) => `<instruction>${eachInstruction}</instruction>`)
       .join("\n");
-  }
-  else {
+  } else {
     customInstructions = "";
   }
+
+  const connectedServers = mcpHub.getServers().filter((server) => server.status === "connected");
+
+  const mcpServersXML = connectedServers.length > 0
+    ? `<mcp-servers>
+${connectedServers.map((server) => {
+      const config = JSON.parse(server.config);
+      const serverName = server.name;
+      const serverCommand = config.command;
+      const serverArgs = config.args && Array.isArray(config.args) ? config.args.join(" ") : "";
+      const serverTools = server.tools?.length
+        ? `<mcp-tools>
+${server.tools.map((tool) => {
+          const schemaStr = tool.inputSchema
+            ? `<inputSchema>${JSON.stringify(tool.inputSchema, null, 2)}</inputSchema>`
+            : "";
+          return `<mcp-tool name="${tool.name}">
+  <description>${tool.description}</description>
+  ${schemaStr}
+</mcp-tool>`;
+        }).join("\n")}
+</mcp-tools>`
+        : "";
+
+      const serverResources = server.resources?.length
+        ? `<mcp-resources>
+${server.resources.map((resource) => {
+          return `<mcp-resource>
+  <uri>${resource.uri}</uri>
+  <name>${resource.name}</name>
+  <description>${resource.description}</description>
+</mcp-resource>`;
+        }).join("\n")}
+</mcp-resources>`
+        : "";
+
+      const serverTemplates = server.resourceTemplates?.length
+        ? `<mcp-resource-templates>
+${server.resourceTemplates.map((template) => {
+          return `<mcp-resource-template>
+  <uriTemplate>${template.uriTemplate}</uriTemplate>
+  <name>${template.name}</name>
+  <description>${template.description}</description>
+</mcp-resource-template>`;
+        }).join("\n")}
+</mcp-resource-templates>`
+        : "";
+
+      return `<mcp-server name="${serverName}">
+  <command>${serverCommand}</command>
+  <args>${serverArgs}</args>
+  ${serverTools}
+  ${serverResources}
+  ${serverTemplates}
+</mcp-server>`;
+    }).join("\n")}
+</mcp-servers>`
+    : `<mcp-servers><no-servers-connected/></mcp-servers>`;
 
   return `<purpose>
     You are CommitAi, a highly skilled software engineer with extensive knowledge in many programming languages, frameworks, design patterns, and best practices.
@@ -36,7 +95,8 @@ export const SYSTEM_PROMPT = async (
     <instruction>Do not use CDATA sections.</instruction>
     <instruction>End the prompt without further conversation or unnecessary text.</instruction>
     <instruction>If successful, proceed with previous plan. Otherwise, create a new plan.</instruction>
-${customInstructions}</instructions>
+${customInstructions}
+</instructions>
 
 <sections>
     <tool-use>
@@ -185,7 +245,7 @@ ${customInstructions}</instructions>
             <usage>
                 <browser_action>
                     <action>Action to perform</action>
-                    <url>URL to launch (if launch) </url>
+                    <url>URL to launch (if launch)</url>
                     <coordinate>x,y coordinates (if click)</coordinate>
                     <text>Text to type (if type)</text>
                 </browser_action>
@@ -223,6 +283,49 @@ ${customInstructions}</instructions>
                 </attempt_completion>
             </usage>
         </tool>
+
+        <tool>
+            <name>use_mcp_tool</name>
+            <description>
+                Request to use a tool provided by a connected MCP server.
+            </description>
+            <parameters>
+                <parameter>server_name: required, the name of the MCP server providing the tool.</parameter>
+                <parameter>tool_name: required, the name of the tool to execute.</parameter>
+                <parameter>arguments: required, a JSON object containing the tool's input parameters.</parameter>
+            </parameters>
+            <usage>
+                <use_mcp_tool>
+                    <server_name>server name here</server_name>
+                    <tool_name>tool name here</tool_name>
+                    <arguments>
+                    {
+                      "param1": "value1",
+                      "param2": "value2"
+                    }
+                    </arguments>
+                </use_mcp_tool>
+            </usage>
+        </tool>
+
+        <tool>
+            <name>access_mcp_resource</name>
+            <description>
+                Request to access a resource provided by a connected MCP server.
+            </description>
+            <parameters>
+                <parameter>server_name: required, the name of the MCP server providing the resource.</parameter>
+                <parameter>uri: required, the URI identifying the specific resource to access.</parameter>
+            </parameters>
+            <usage>
+                <access_mcp_resource>
+                    <server_name>server name here</server_name>
+                    <uri>resource URI here</uri>
+                </access_mcp_resource>
+            </usage>
+        </tool>
+
+        ${mcpServersXML}
     </tools>
 </sections>
 
