@@ -151,7 +151,11 @@ export class Cline {
 	}
 
 	private async addToApiConversationHistory(message: Anthropic.MessageParam) {
-		logPrompt(message.content as string, message.role)
+		var logMessage = message.content
+		if (typeof logMessage !== "string") {
+			logMessage = JSON.stringify(logMessage)
+		}
+		logPrompt(logMessage, message.role)
 		this.apiConversationHistory.push(message)
 		await this.saveApiConversationHistory()
 	}
