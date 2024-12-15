@@ -1,0 +1,15 @@
+{
+  "name": "list_code_definition_names",
+  "description": "List definition names (classes, functions, methods) in source code files at the top level of a specified directory.",
+  "parameters": [
+    {
+      "name": "path",
+      "description": "required, directory path to analyze."
+    }
+  ],
+  "usage": {
+    "list_code_definition_names": {
+      "path": "Directory path here"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "browser_action",
+  "description": "Interact with a Puppeteer-controlled browser. Must start with launch and end with close. Use other actions (click, type, scroll_down, scroll_up) in between as needed.",
+  "parameters": [
+    {
+      "name": "action",
+      "description": "required, one of [launch, click, type, scroll_down, scroll_up, close]."
+    },
+    {
+      "name": "url",
+      "description": "optional, used for launch action."
+    },
+    {
+      "name": "coordinate",
+      "description": "optional, x,y coordinates for click action."
+    },
+    {
+      "name": "text",
+      "description": "optional, text to type for type action."
+    }
+  ],
+  "usage": {
+    "browser_action": {
+      "action": "Action to perform",
+      "url": "URL to launch (if launch)",
+      "coordinate": "x,y coordinates (if click)",
+      "text": "Text to type (if type)"
+    }
+  }
+}

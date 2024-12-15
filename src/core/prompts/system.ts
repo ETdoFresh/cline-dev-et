@@ -3,6 +3,51 @@ import { McpHub } from "../../services/mcp/McpHub"
 import osName from "os-name"
 import defaultShell from "default-shell"
 import { logPrompt } from "../../utils/logging"
+import fs from "fs"
+import path from "path"
+
+interface ToolParameter {
+  name: string;
+  description: string;
+}
+
+interface ToolDefinition {
+  name: string;
+  description: string;
+  parameters: ToolParameter[];
+  usage: Record<string, Record<string, string>>;
+}
+
+const loadToolDefinitions = () => {
+  const toolsDir = path.join(__dirname, 'tools');
+  const toolFiles = fs.readdirSync(toolsDir).filter(file => file.endsWith('.json'));
+  
+  return toolFiles.map(file => {
+    const toolContent = fs.readFileSync(path.join(toolsDir, file), 'utf-8');
+    const toolDef = JSON.parse(toolContent) as ToolDefinition;
+    
+    return `        <tool>
+            <name>${toolDef.name}</name>
+            <description>
+                ${toolDef.description}
+            </description>
+            <parameters>
+                ${toolDef.parameters.map((param: ToolParameter) => 
+                  `<parameter>${param.name}: ${param.description}</parameter>`
+                ).join('\n                ')}
+            </parameters>
+            <usage>
+                ${Object.entries(toolDef.usage).map(([key, value]) => 
+                  `<${key}>
+                    ${Object.entries(value).map(([k, v]) => 
+                      `<${k}>${v}</${k}>`
+                    ).join('\n                    ')}
+                </${key}>`
+                ).join('\n                ')}
+            </usage>
+        </tool>`
+  }).join('\n\n');
+}
 
 export const SYSTEM_PROMPT = async (
   cwd: string,
@@ -16,7 +61,6 @@ export const SYSTEM_PROMPT = async (
   if (customInstructions) {
     customInstructions = customInstructions.trim();
     var listOfCustomInstructions = customInstructions.split("\n");
-    // <instruction>eachInstruction</instruction>
     customInstructions = listOfCustomInstructions
       .map((eachInstruction) => `<instruction>${eachInstruction}</instruction>`)
       .join("\n");
@@ -26,7 +70,6 @@ export const SYSTEM_PROMPT = async (
 
   const connectedServers = mcpHub.getServers().filter((server) => server.status === "connected");
 
-  // Log server tools to debug console
   connectedServers.forEach(server => {
     if (server.tools && server.tools.length > 0) {
       console.log(`Server ${server.name} tools:`, server.tools.map(tool => tool.name));
@@ -50,7 +93,7 @@ ${server.tools.map((tool) => {
   <description>${tool.description}</description>
   ${schemaStr}
 </mcp-tool>`;
-        }).join("\n")}
+        }).join('\n')}
 </mcp-tools>`
         : "";
 
@@ -62,7 +105,7 @@ ${server.resources.map((resource) => {
   <name>${resource.name}</name>
   <description>${resource.description}</description>
 </mcp-resource>`;
-        }).join("\n")}
+        }).join('\n')}
 </mcp-resources>`
         : "";
 
@@ -74,7 +117,7 @@ ${server.resourceTemplates.map((template) => {
   <name>${template.name}</name>
   <description>${template.description}</description>
 </mcp-resource-template>`;
-        }).join("\n")}
+        }).join('\n')}
 </mcp-resource-templates>`
         : "";
 
@@ -85,9 +128,11 @@ ${server.resourceTemplates.map((template) => {
   ${serverResources}
   ${serverTemplates}
 </mcp-server>`;
-    }).join("\n")}
+    }).join('\n')}
 </mcp-servers>`
     : `<mcp-servers><no-servers-connected/></mcp-servers>`;
+
+  const toolDefinitions = loadToolDefinitions();
 
   const systemPrompt = `<purpose>
     You are CommitAi, a highly skilled software engineer with extensive knowledge in many programming languages, frameworks, design patterns, and best practices.
@@ -141,197 +186,7 @@ ${customInstructions}
     </objective>
 
     <tools>
-        <tool>
-            <name>execute_command</name>
-            <description>
-                Request to execute a CLI command on the system. Use this when you need to perform system operations or run specific commands.
-            </description>
-            <parameters>
-                <parameter>command: required, the CLI command to execute. Should be valid and safe.</parameter>
-            </parameters>
-            <usage>
-                <execute_command>
-                    <command>Your command here</command>
-                </execute_command>
-            </usage>
-        </tool>
-
-        <tool>
-            <name>read_file</name>
-            <description>
-                Request to read the contents of a file at the specified path. The file's content will be returned as raw text.
-            </description>
-            <parameters>
-                <parameter>path: required, the path of the file to read.</parameter>
-            </parameters>
-            <usage>
-                <read_file>
-                    <path>File path here</path>
-                </read_file>
-            </usage>
-        </tool>
-
-        <tool>
-            <name>write_to_file</name>
-            <description>
-                Write content to a file at the specified path. Overwrites existing files or creates new ones.
-            </description>
-            <parameters>
-                <parameter>path: required, the path of the file to write to.</parameter>
-                <parameter>content: required, the complete file content.</parameter>
-            </parameters>
-            <usage>
-                <write_to_file>
-                    <path>File path here</path>
-                    <content>Complete file content here</content>
-                </write_to_file>
-            </usage>
-        </tool>
-
-        <tool>
-            <name>search_files</name>
-            <description>
-                Perform a regex search across files in a specified directory, providing context-rich results.
-            </description>
-            <parameters>
-                <parameter>path: required, the directory path to search.</parameter>
-                <parameter>regex: required, the regex pattern to search for.</parameter>
-                <parameter>file_pattern: optional, a glob pattern to filter files.</parameter>
-            </parameters>
-            <usage>
-                <search_files>
-                    <path>Directory path here</path>
-                    <regex>Your regex pattern here</regex>
-                    <file_pattern>Optional file pattern</file_pattern>
-                </search_files>
-            </usage>
-        </tool>
-
-        <tool>
-            <name>list_files</name>
-            <description>
-                List files and directories within the specified directory. Can list recursively.
-            </description>
-            <parameters>
-                <parameter>path: required, directory path.</parameter>
-                <parameter>recursive: optional, set to true for recursive listing.</parameter>
-            </parameters>
-            <usage>
-                <list_files>
-                    <path>Directory path here</path>
-                    <recursive>true or false</recursive>
-                </list_files>
-            </usage>
-        </tool>
-
-        <tool>
-            <name>list_code_definition_names</name>
-            <description>
-                List definition names (classes, functions, methods) in source code files at the top level of a specified directory.
-            </description>
-            <parameters>
-                <parameter>path: required, directory path to analyze.</parameter>
-            </parameters>
-            <usage>
-                <list_code_definition_names>
-                    <path>Directory path here</path>
-                </list_code_definition_names>
-            </usage>
-        </tool>
-
-        <tool>
-            <name>browser_action</name>
-            <description>
-                Interact with a Puppeteer-controlled browser. Must start with launch and end with close. Use other actions (click, type, scroll_down, scroll_up) in between as needed.
-            </description>
-            <parameters>
-                <parameter>action: required, one of [launch, click, type, scroll_down, scroll_up, close].</parameter>
-                <parameter>url: optional, used for launch action.</parameter>
-                <parameter>coordinate: optional, x,y coordinates for click action.</parameter>
-                <parameter>text: optional, text to type for type action.</parameter>
-            </parameters>
-            <usage>
-                <browser_action>
-                    <action>Action to perform</action>
-                    <url>URL to launch (if launch)</url>
-                    <coordinate>x,y coordinates (if click)</coordinate>
-                    <text>Text to type (if type)</text>
-                </browser_action>
-            </usage>
-        </tool>
-
-        <tool>
-            <name>ask_followup_question</name>
-            <description>
-                Ask the user a question to gather additional information if necessary.
-            </description>
-            <parameters>
-                <parameter>question: required, the question to ask the user.</parameter>
-            </parameters>
-            <usage>
-                <ask_followup_question>
-                    <question>Your question here</question>
-                </ask_followup_question>
-            </usage>
-        </tool>
-
-        <tool>
-            <name>attempt_completion</name>
-            <description>
-                Present the final result of your work to the user. Optionally provide a command to showcase the result.
-            </description>
-            <parameters>
-                <parameter>result: required, final result description.</parameter>
-                <parameter>command: optional, a CLI command to demonstrate the result.</parameter>
-            </parameters>
-            <usage>
-                <attempt_completion>
-                    <result>Your final result here</result>
-                    <command>Optional command</command>
-                </attempt_completion>
-            </usage>
-        </tool>
-
-        <tool>
-            <name>use_mcp_tool</name>
-            <description>
-                Request to use a tool provided by a connected MCP server.
-            </description>
-            <parameters>
-                <parameter>server_name: required, the name of the MCP server providing the tool.</parameter>
-                <parameter>tool_name: required, the name of the tool to execute.</parameter>
-                <parameter>arguments: required, a JSON object containing the tool's input parameters.</parameter>
-            </parameters>
-            <usage>
-                <use_mcp_tool>
-                    <server_name>server name here</server_name>
-                    <tool_name>tool name here</tool_name>
-                    <arguments>
-                    {
-                      "param1": "value1",
-                      "param2": "value2"
-                    }
-                    </arguments>
-                </use_mcp_tool>
-            </usage>
-        </tool>
-
-        <tool>
-            <name>access_mcp_resource</name>
-            <description>
-                Request to access a resource provided by a connected MCP server.
-            </description>
-            <parameters>
-                <parameter>server_name: required, the name of the MCP server providing the resource.</parameter>
-                <parameter>uri: required, the URI identifying the specific resource to access.</parameter>
-            </parameters>
-            <usage>
-                <access_mcp_resource>
-                    <server_name>server name here</server_name>
-                    <uri>resource URI here</uri>
-                </access_mcp_resource>
-            </usage>
-        </tool>
+        ${toolDefinitions}
 
         ${mcpServersXML}
     </tools>

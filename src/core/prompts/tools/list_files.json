@@ -1,0 +1,20 @@
+{
+  "name": "list_files",
+  "description": "List files and directories within the specified directory. Can list recursively.",
+  "parameters": [
+    {
+      "name": "path",
+      "description": "required, directory path."
+    },
+    {
+      "name": "recursive",
+      "description": "optional, set to true for recursive listing."
+    }
+  ],
+  "usage": {
+    "list_files": {
+      "path": "Directory path here",
+      "recursive": "true or false"
+    }
+  }
+}

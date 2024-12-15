@@ -1,0 +1,20 @@
+{
+  "name": "access_mcp_resource",
+  "description": "Request to access a resource provided by a connected MCP server.",
+  "parameters": [
+    {
+      "name": "server_name",
+      "description": "required, the name of the MCP server providing the resource."
+    },
+    {
+      "name": "uri",
+      "description": "required, the URI identifying the specific resource to access."
+    }
+  ],
+  "usage": {
+    "access_mcp_resource": {
+      "server_name": "server name here",
+      "uri": "resource URI here"
+    }
+  }
+}

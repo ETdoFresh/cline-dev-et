@@ -1,0 +1,15 @@
+{
+  "name": "ask_followup_question",
+  "description": "Ask the user a question to gather additional information if necessary.",
+  "parameters": [
+    {
+      "name": "question",
+      "description": "required, the question to ask the user."
+    }
+  ],
+  "usage": {
+    "ask_followup_question": {
+      "question": "Your question here"
+    }
+  }
+}

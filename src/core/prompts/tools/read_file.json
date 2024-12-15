@@ -1,0 +1,15 @@
+{
+  "name": "read_file",
+  "description": "Request to read the contents of a file at the specified path. The file's content will be returned as raw text.",
+  "parameters": [
+    {
+      "name": "path",
+      "description": "required, the path of the file to read."
+    }
+  ],
+  "usage": {
+    "read_file": {
+      "path": "File path here"
+    }
+  }
+}

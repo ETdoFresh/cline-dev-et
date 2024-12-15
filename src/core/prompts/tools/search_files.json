@@ -1,0 +1,25 @@
+{
+  "name": "search_files",
+  "description": "Perform a regex search across files in a specified directory, providing context-rich results.",
+  "parameters": [
+    {
+      "name": "path",
+      "description": "required, the directory path to search."
+    },
+    {
+      "name": "regex",
+      "description": "required, the regex pattern to search for."
+    },
+    {
+      "name": "file_pattern",
+      "description": "optional, a glob pattern to filter files."
+    }
+  ],
+  "usage": {
+    "search_files": {
+      "path": "Directory path here",
+      "regex": "Your regex pattern here",
+      "file_pattern": "Optional file pattern"
+    }
+  }
+}

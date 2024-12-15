@@ -1,0 +1,20 @@
+{
+  "name": "attempt_completion",
+  "description": "Present the final result of your work to the user. Optionally provide a command to showcase the result.",
+  "parameters": [
+    {
+      "name": "result",
+      "description": "required, final result description."
+    },
+    {
+      "name": "command",
+      "description": "optional, a CLI command to demonstrate the result."
+    }
+  ],
+  "usage": {
+    "attempt_completion": {
+      "result": "Your final result here",
+      "command": "Optional command"
+    }
+  }
+}

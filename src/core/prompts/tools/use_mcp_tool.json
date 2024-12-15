@@ -1,0 +1,28 @@
+{
+  "name": "use_mcp_tool",
+  "description": "Request to use a tool provided by a connected MCP server.",
+  "parameters": [
+    {
+      "name": "server_name",
+      "description": "required, the name of the MCP server providing the tool."
+    },
+    {
+      "name": "tool_name",
+      "description": "required, the name of the tool to execute."
+    },
+    {
+      "name": "arguments",
+      "description": "required, a JSON object containing the tool's input parameters."
+    }
+  ],
+  "usage": {
+    "use_mcp_tool": {
+      "server_name": "server name here",
+      "tool_name": "tool name here",
+      "arguments": {
+        "param1": "value1",
+        "param2": "value2"
+      }
+    }
+  }
+}

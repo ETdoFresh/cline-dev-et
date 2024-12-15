@@ -1,0 +1,15 @@
+{
+  "name": "execute_command",
+  "description": "Request to execute a CLI command on the system. Use this when you need to perform system operations or run specific commands.",
+  "parameters": [
+    {
+      "name": "command",
+      "description": "required, the CLI command to execute. Should be valid and safe."
+    }
+  ],
+  "usage": {
+    "execute_command": {
+      "command": "Your command here"
+    }
+  }
+}
