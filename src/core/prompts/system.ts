@@ -25,10 +25,10 @@ export async function SYSTEM_PROMPT (
 			// systemPrompt = await createGlobalSystemPrompt(provider)
 			systemPrompt = defaultSystemPrompt
 
-		systemPrompt = systemPrompt.replace(/\${cwd.toPosix()}/g, cwd.toPosix())
-		systemPrompt = systemPrompt.replace(/\${osName()}/g, osName())
-		systemPrompt = systemPrompt.replace(/\${defaultShell}/g, defaultShell)
-		systemPrompt = systemPrompt.replace(/\${os.homedir().toPosix()}/g, os.homedir().toPosix())
+		systemPrompt = systemPrompt.replace(/\\?\${cwd.toPosix\(\)}/g, cwd.toPosix())
+		systemPrompt = systemPrompt.replace(/\\?\${osName\(\)}/g, osName())
+		systemPrompt = systemPrompt.replace(/\\?\${defaultShell}/g, defaultShell)
+		systemPrompt = systemPrompt.replace(/\\?\${os.homedir\(\).toPosix\(\)}/g, os.homedir().toPosix())
 		systemPrompt = keepOrDeleteComputerUse(systemPrompt, supportsComputerUse)
 		systemPrompt = await keepOrDeleteMcpServers(systemPrompt, mcpHub)
 		return systemPrompt
@@ -91,9 +91,9 @@ async function keepOrDeleteMcpServers(systemPrompt: string, mcpHub: McpHub) {
 	}
 
 	systemPrompt = systemPrompt.replace(/<\/?has_mcp_servers>/g, "")
-	systemPrompt = systemPrompt.replace(/\${await mcpHub.getMcpServersPath()}/g, await mcpHub.getMcpServersPath())
-	systemPrompt = systemPrompt.replace(/\${await mcpHub.getMcpSettingsFilePath()}/g, await mcpHub.getMcpSettingsFilePath())
-	systemPrompt = systemPrompt.replace(/\${mcpHub.getConnectedServersList()}/g, mcpHub.getConnectedServersList())
+	systemPrompt = systemPrompt.replace(/\\?\${await mcpHub.getMcpServersPath\(\)}/g, await mcpHub.getMcpServersPath())
+	systemPrompt = systemPrompt.replace(/\\?\${await mcpHub.getMcpSettingsFilePath\(\)}/g, await mcpHub.getMcpSettingsFilePath())
+	systemPrompt = systemPrompt.replace(/\\?\${mcpHub.getConnectedServersList\(\)}/g, mcpHub.getConnectedServersList())
 	return systemPrompt
 }
 
