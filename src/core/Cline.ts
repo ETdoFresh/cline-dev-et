@@ -798,12 +798,13 @@ export class Cline {
 			console.error("MCP servers failed to connect in time")
 		})
 
-		const mcpHub = this.providerRef.deref()?.mcpHub
+		const provider = this.providerRef.deref()
+		const mcpHub = provider?.mcpHub
 		if (!mcpHub) {
 			throw new Error("MCP hub not available")
 		}
 
-		let systemPrompt = await SYSTEM_PROMPT(cwd, this.api.getModel().info.supportsComputerUse ?? false, mcpHub)
+		let systemPrompt = await SYSTEM_PROMPT(provider, cwd, this.api.getModel().info.supportsComputerUse ?? false, mcpHub)
 		let settingsCustomInstructions = this.customInstructions?.trim()
 		const clineRulesFilePath = path.resolve(cwd, GlobalFileNames.clineRules)
 		let clineRulesFileInstructions: string | undefined
