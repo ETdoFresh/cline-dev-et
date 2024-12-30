@@ -61,6 +61,7 @@ type GlobalStateKey =
 	| "azureApiVersion"
 	| "openRouterModelId"
 	| "openRouterModelInfo"
+	| "openRouterBaseUrl"
 	| "autoApprovalSettings"
 
 export const GlobalFileNames = {
@@ -364,6 +365,7 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 								apiModelId,
 								apiKey,
 								openRouterApiKey,
+								openRouterBaseUrl,
 								awsAccessKey,
 								awsSecretKey,
 								awsSessionToken,
@@ -389,6 +391,7 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 							await this.updateGlobalState("apiModelId", apiModelId)
 							await this.storeSecret("apiKey", apiKey)
 							await this.storeSecret("openRouterApiKey", openRouterApiKey)
+							await this.updateGlobalState("openRouterBaseUrl", openRouterBaseUrl)
 							await this.storeSecret("awsAccessKey", awsAccessKey)
 							await this.storeSecret("awsSecretKey", awsSecretKey)
 							await this.storeSecret("awsSessionToken", awsSessionToken)
@@ -949,6 +952,7 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 			azureApiVersion,
 			openRouterModelId,
 			openRouterModelInfo,
+			openRouterBaseUrl,
 			lastShownAnnouncementId,
 			customInstructions,
 			taskHistory,
@@ -978,6 +982,7 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 			this.getGlobalState("azureApiVersion") as Promise<string | undefined>,
 			this.getGlobalState("openRouterModelId") as Promise<string | undefined>,
 			this.getGlobalState("openRouterModelInfo") as Promise<ModelInfo | undefined>,
+			this.getGlobalState("openRouterBaseUrl") as Promise<string | undefined>,
 			this.getGlobalState("lastShownAnnouncementId") as Promise<string | undefined>,
 			this.getGlobalState("customInstructions") as Promise<string | undefined>,
 			this.getGlobalState("taskHistory") as Promise<HistoryItem[] | undefined>,
@@ -1024,6 +1029,7 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 				azureApiVersion,
 				openRouterModelId,
 				openRouterModelInfo,
+				openRouterBaseUrl,
 			},
 			lastShownAnnouncementId,
 			customInstructions,

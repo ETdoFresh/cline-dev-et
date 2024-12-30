@@ -14,7 +14,7 @@ export class OpenRouterHandler implements ApiHandler {
 	constructor(options: ApiHandlerOptions) {
 		this.options = options
 		this.client = new OpenAI({
-			baseURL: "https://openrouter.ai/api/v1",
+			baseURL: this.options.openRouterBaseUrl || "https://openrouter.ai/api/v1",
 			apiKey: this.options.openRouterApiKey,
 			defaultHeaders: {
 				"HTTP-Referer": "https://cline.bot", // Optional, for including your app on openrouter.ai rankings.
@@ -142,7 +142,8 @@ export class OpenRouterHandler implements ApiHandler {
 		await delay(500) // FIXME: necessary delay to ensure generation endpoint is ready
 
 		try {
-			const response = await axios.get(`https://openrouter.ai/api/v1/generation?id=${genId}`, {
+			const baseUrl = this.options.openRouterBaseUrl || "https://openrouter.ai/api/v1"
+			const response = await axios.get(`${baseUrl}/generation?id=${genId}`, {
 				headers: {
 					Authorization: `Bearer ${this.options.openRouterApiKey}`,
 				},
