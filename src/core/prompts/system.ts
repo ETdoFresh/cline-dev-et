@@ -73,7 +73,7 @@ async function createGlobalSystemPrompt(provider: ClineProvider) {
 	const promptsDir = path.join(provider.context.globalStorageUri.fsPath, "prompts")
 	await fs.mkdir(promptsDir, { recursive: true })
 	await fs.writeFile(path.join(promptsDir, GlobalFileNames.systemPrompt), defaultSystemPrompt)
-  return defaultSystemPrompt
+	return defaultSystemPrompt
 }
 
 function keepOrDeleteComputerUse(systemPrompt: string, supportsComputerUse: boolean) {
@@ -87,13 +87,14 @@ function keepOrDeleteComputerUse(systemPrompt: string, supportsComputerUse: bool
 async function keepOrDeleteMcpServers(systemPrompt: string, mcpHub: McpHub) {
 	const hasMcpServers = mcpHub.getServers().length > 0
 	if (!hasMcpServers) {
-		return systemPrompt.replace(/<has_mcp_servers>[\s\S]*?<\/has_mcp_servers>/g, "")
+		systemPrompt = systemPrompt.replace(/<has_mcp_servers>[\s\S]*?<\/has_mcp_servers>/g, "")
 	}
-
-	systemPrompt = systemPrompt.replace(/<\/?has_mcp_servers>/g, "")
-	systemPrompt = systemPrompt.replace(/\\?\${await mcpHub.getMcpServersPath\(\)}/g, await mcpHub.getMcpServersPath())
-	systemPrompt = systemPrompt.replace(/\\?\${await mcpHub.getMcpSettingsFilePath\(\)}/g, await mcpHub.getMcpSettingsFilePath())
-	systemPrompt = systemPrompt.replace(/\\?\${mcpHub.getConnectedServersList\(\)}/g, mcpHub.getConnectedServersList())
+	else {
+		systemPrompt = systemPrompt.replace(/<\/?has_mcp_servers>/g, "")
+		systemPrompt = systemPrompt.replace(/\\?\${await mcpHub.getMcpServersPath\(\)}/g, await mcpHub.getMcpServersPath())
+		systemPrompt = systemPrompt.replace(/\\?\${await mcpHub.getMcpSettingsFilePath\(\)}/g, await mcpHub.getMcpSettingsFilePath())
+		systemPrompt = systemPrompt.replace(/\\?\${mcpHub.getConnectedServersList\(\)}/g, mcpHub.getConnectedServersList())
+	}
 	return systemPrompt
 }
 

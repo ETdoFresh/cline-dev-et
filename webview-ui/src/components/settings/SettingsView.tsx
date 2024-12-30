@@ -33,6 +33,10 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 		vscode.postMessage({ type: "openClineSystemPrompt" })
 	}
 
+	const openClineRules = () => {
+		vscode.postMessage({ type: "openClineRules" })
+	}
+
 	useEffect(() => {
 		setApiErrorMessage(undefined)
 		setModelIdErrorMessage(undefined)
@@ -110,11 +114,18 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 				</div>
 
 				<div style={{ marginBottom: 5 }}>
-					<VSCodeButton 
-						onClick={openClineSystemPrompt}
-						style={{ width: "auto" }}>
-						Edit System Prompt
-					</VSCodeButton>
+					<div style={{ display: "flex", gap: "8px" }}>
+						<VSCodeButton 
+							onClick={openClineSystemPrompt}
+							style={{ width: "auto" }}>
+							.clinesystemprompt
+						</VSCodeButton>
+						<VSCodeButton 
+							onClick={openClineRules}
+							style={{ width: "auto" }}>
+							.clinerules
+						</VSCodeButton>
+					</div>
 					<p
 						style={{
 							fontSize: "12px",

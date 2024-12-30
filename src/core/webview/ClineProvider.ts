@@ -68,8 +68,8 @@ export const GlobalFileNames = {
 	uiMessages: "ui_messages.json",
 	openRouterModels: "openrouter_models.json",
 	mcpSettings: "cline_mcp_settings.json",
-	clineRules: ".clinerules",
 	systemPrompt: ".clinesystemprompt",
+	clineRules: ".clinerules",
 }
 
 export class ClineProvider implements vscode.WebviewViewProvider {
@@ -527,6 +527,17 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 						else {
 							await fs.writeFile(path.join(cwd, GlobalFileNames.systemPrompt), defaultSystemPrompt)
 							openFile(path.join(cwd, GlobalFileNames.systemPrompt))
+						}
+						break
+					}
+					case "openClineRules": {
+						// Check local cwd for .clinerules file
+						if (await fileExistsAtPath(path.join(cwd, GlobalFileNames.clineRules)))
+							openFile(path.join(cwd, GlobalFileNames.clineRules))
+						// Create empty file if it doesn't exist
+						else {
+							await fs.writeFile(path.join(cwd, GlobalFileNames.clineRules), "")
+							openFile(path.join(cwd, GlobalFileNames.clineRules))
 						}
 						break
 					}
