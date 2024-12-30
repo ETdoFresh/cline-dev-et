@@ -97,7 +97,7 @@ async function keepOrDeleteMcpServers(systemPrompt: string, mcpHub: McpHub) {
 	return systemPrompt
 }
 
-const defaultSystemPrompt = `You are Cline, a highly skilled software engineer with extensive knowledge in many programming languages, frameworks, design patterns, and best practices.
+export const defaultSystemPrompt = `You are Cline, a highly skilled software engineer with extensive knowledge in many programming languages, frameworks, design patterns, and best practices.
 
 ====
 

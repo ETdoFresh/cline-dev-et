@@ -53,7 +53,7 @@ import { showSystemNotification } from "../integrations/notifications"
 import { removeInvalidChars } from "../utils/string"
 import { fixModelHtmlEscaping } from "../utils/string"
 
-const cwd =
+export const cwd =
 	vscode.workspace.workspaceFolders?.map((folder) => folder.uri.fsPath).at(0) ?? path.join(os.homedir(), "Desktop") // may or may not exist but fs checking existence would immediately ask for permission which would be bad UX, need to come up with a better solution
 
 type ToolResponse = string | Array<Anthropic.TextBlockParam | Anthropic.ImageBlockParam>

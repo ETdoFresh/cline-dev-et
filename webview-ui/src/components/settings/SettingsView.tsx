@@ -29,6 +29,10 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 		}
 	}
 
+	const openClineSystemPrompt = () => {
+		vscode.postMessage({ type: "openClineSystemPrompt" })
+	}
+
 	useEffect(() => {
 		setApiErrorMessage(undefined)
 		setModelIdErrorMessage(undefined)
@@ -102,6 +106,22 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 							color: "var(--vscode-descriptionForeground)",
 						}}>
 						These instructions are added to the end of the system prompt sent with every request.
+					</p>
+				</div>
+
+				<div style={{ marginBottom: 5 }}>
+					<VSCodeButton 
+						onClick={openClineSystemPrompt}
+						style={{ width: "auto" }}>
+						Edit System Prompt
+					</VSCodeButton>
+					<p
+						style={{
+							fontSize: "12px",
+							marginTop: "5px",
+							color: "var(--vscode-descriptionForeground)",
+						}}>
+						Edit the core system prompt that defines the assistant's behavior.
 					</p>
 				</div>
 

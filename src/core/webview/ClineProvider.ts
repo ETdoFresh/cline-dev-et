@@ -23,6 +23,8 @@ import { openMention } from "../mentions"
 import { getNonce } from "./getNonce"
 import { getUri } from "./getUri"
 import { AutoApprovalSettings, DEFAULT_AUTO_APPROVAL_SETTINGS } from "../../shared/AutoApprovalSettings"
+import { defaultSystemPrompt } from "../prompts/system"
+import { cwd } from "../../core/Cline"
 
 /*
 https://github.com/microsoft/vscode-webview-ui-toolkit-samples/blob/main/default/weather-webview/src/providers/WeatherViewProvider.ts
@@ -509,6 +511,22 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 							await this.mcpHub?.restartConnection(message.text!)
 						} catch (error) {
 							console.error(`Failed to retry connection for ${message.text}:`, error)
+						}
+						break
+					}
+					case "openClineSystemPrompt": {
+						// Check local cwd for .clinesystemprompt file
+						if (await fileExistsAtPath(path.join(cwd, GlobalFileNames.systemPrompt)))
+							openFile(path.join(cwd, GlobalFileNames.systemPrompt))
+
+						// Check global storage for .clinesystemprompt file
+						else if (await fileExistsAtPath(path.join(this.context.globalStorageUri.fsPath, GlobalFileNames.systemPrompt)))
+							openFile(path.join(os.homedir(), GlobalFileNames.systemPrompt))
+
+						// Create a new .clinesystemprompt file in the local cwd
+						else {
+							await fs.writeFile(path.join(cwd, GlobalFileNames.systemPrompt), defaultSystemPrompt)
+							openFile(path.join(cwd, GlobalFileNames.systemPrompt))
 						}
 						break
 					}
