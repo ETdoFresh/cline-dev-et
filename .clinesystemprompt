@@ -364,7 +364,7 @@
     </guidelines>
     <commands>
       <command>git add .</command>
-      <command optional="true">git --no-pager diff --cached<file></command>
+      <command>git --no-pager diff --cached<file></command>
       <command>git commit -m "Your commit message here"</command>
       <command>git push</command>
     </commands>

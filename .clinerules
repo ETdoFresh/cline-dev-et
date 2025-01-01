@@ -1,0 +1,3 @@
+<custom_rules>
+  <custom_rule>To build a vsix file, use `vsce package` command.</custom_rule>
+</custom_rules>
