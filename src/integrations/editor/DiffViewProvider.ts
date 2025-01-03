@@ -49,6 +49,10 @@ export class DiffViewProvider {
 		} else {
 			this.originalContent = ""
 		}
+
+		// Strip out any BOM character
+		this.originalContent = this.originalContent.startsWith("\uFEFF") ? this.originalContent.slice(1) : this.originalContent;
+
 		// for new files, create any necessary directories and keep track of new directories to delete if the user denies the operation
 		this.createdDirs = await createDirectoriesForFile(absolutePath)
 		// make sure the file exists before we open it
