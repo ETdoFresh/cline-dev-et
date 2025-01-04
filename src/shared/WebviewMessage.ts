@@ -28,6 +28,8 @@ export interface WebviewMessage {
 		| "autoApprovalSettings"
 		| "openClineSystemPrompt"
 		| "openClineRules"
+		| "toggleRecording"
+		| "toggleLiveChat"
 	text?: string
 	askResponse?: ClineAskResponse
 	apiConfiguration?: ApiConfiguration

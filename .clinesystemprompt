@@ -343,10 +343,12 @@
     <guidelines>
       <guideline>Respond back with the task completion information</guideline>
       <guideline>Task Title should be bold</guideline>
-      <guideline>Task Description should be detailed of everything that has been completed</guideline>
+      <guideline>Task Description should be incredibly detailed of everything that has been completed</guideline>
       <guideline>Task Description should be in present tense</guideline>
       <guideline>Task Description should be in imperative mood</guideline>
       <guideline>Task Title and Description should begin with an action verb</guideline>
+      <guideline>When creating the ending task, please summarize all previous task in conversation as well</guideline>
+      <guideline>Include details like modified files, commands executed, and any other relevant information</guideline>
     </guidelines>
   </custom_rule>
   <custom_rule>

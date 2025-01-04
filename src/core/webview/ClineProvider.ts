@@ -547,6 +547,12 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 						}
 						break
 					}
+					case "toggleRecording":
+						console.log("Recording")
+						break
+					case "toggleLiveChat":
+						console.log("Live Chat")
+						break
 					// Add more switch case statements here as more webview message commands
 					// are created within the webview context (i.e. inside media/main.js)
 				}

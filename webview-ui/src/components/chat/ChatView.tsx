@@ -880,6 +880,8 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 				onSend={() => handleSendMessage(inputValue, selectedImages)}
 				onSelectImages={selectImages}
 				shouldDisableImages={shouldDisableImages}
+				onToggleRecording={() => vscode.postMessage({ type: 'toggleRecording' })}
+				onToggleLiveChat={() => vscode.postMessage({ type: 'toggleLiveChat' })}
 				onHeightChange={() => {
 					if (isAtBottom) {
 						scrollToBottomAuto()

@@ -24,6 +24,8 @@ interface ChatTextAreaProps {
 	onSelectImages: () => void
 	shouldDisableImages: boolean
 	onHeightChange?: (height: number) => void
+	onToggleRecording: () => void
+	onToggleLiveChat: () => void
 }
 
 const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
@@ -39,6 +41,8 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 			onSelectImages,
 			shouldDisableImages,
 			onHeightChange,
+			onToggleRecording,
+			onToggleLiveChat,
 		},
 		ref,
 	) => {
@@ -575,6 +579,30 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 							onClick={() => {
 								if (!shouldDisableImages) {
 									onSelectImages()
+								}
+							}}
+							style={{
+								marginRight: 5.5,
+								fontSize: 16.5,
+							}}
+						/>
+						<div
+							className={`input-icon-button ${textAreaDisabled ? "disabled" : ""} codicon codicon-mic`}
+							onClick={() => {
+								if (!textAreaDisabled) {
+									onToggleRecording()
+								}
+							}}
+							style={{
+								marginRight: 5.5,
+								fontSize: 16.5,
+							}}
+						/>
+						<div
+							className={`input-icon-button ${textAreaDisabled ? "disabled" : ""} codicon codicon-pulse`}
+							onClick={() => {
+								if (!textAreaDisabled) {
+									onToggleLiveChat()
 								}
 							}}
 							style={{
