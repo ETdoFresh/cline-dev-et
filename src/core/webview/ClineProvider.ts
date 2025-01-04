@@ -547,9 +547,21 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 						}
 						break
 					}
-					case "toggleRecording":
-						console.log("Recording")
-						break
+					case "toggleRecording": {
+						const speechExtension = vscode.extensions.getExtension('ms-vscode.vscode-speech');
+						if (!speechExtension) {
+							vscode.window.showErrorMessage('Voice support requires the VS Code Speech extension. Please install it from the marketplace.');
+							break;
+						}
+						
+						if (!speechExtension.isActive) {
+							await speechExtension.activate();
+						}
+						
+						// Implement recording logic using speechExtension.exports
+						console.log("Starting/stopping recording...");
+						break;
+					}
 					case "toggleLiveChat":
 						console.log("Live Chat")
 						break
