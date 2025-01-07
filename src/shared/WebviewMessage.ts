@@ -30,12 +30,18 @@ export interface WebviewMessage {
 		| "openClineRules"
 		| "toggleRecording"
 		| "toggleLiveChat"
+		| "checkpointDiff"
+		| "checkpointRestore"
+		| "taskCompletionViewChanges"
 	text?: string
 	askResponse?: ClineAskResponse
 	apiConfiguration?: ApiConfiguration
 	images?: string[]
 	bool?: boolean
+	number?: number
 	autoApprovalSettings?: AutoApprovalSettings
 }
 
 export type ClineAskResponse = "yesButtonClicked" | "noButtonClicked" | "messageResponse"
+
+export type ClineCheckpointRestore = "task" | "workspace" | "taskAndWorkspace"

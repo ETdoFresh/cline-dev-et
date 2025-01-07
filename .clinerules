@@ -1,3 +1,4 @@
 <custom_rules>
+  <custom_rule>In Powershell, use ; instead of && to separate commands in a single line.</custom_rule>
   <custom_rule>To build a vsix file, use `vsce package` command.</custom_rule>
 </custom_rules>
